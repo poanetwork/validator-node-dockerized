@@ -1,0 +1,72 @@
+version: '3.7'
+services:
+  openethereum:
+    init: true
+    container_name: openethereum
+    image: openethereum/openethereum:latest
+    user: root
+    command:
+      --chain=poasokol
+      --nat="extip:$EXT_IP"
+      --base-path=/root/data
+      --max-peers=100
+      --unlock="$ACCOUNT"
+      --password="$PASSWORD_PATH"
+      --tx-gas-limit="9000000"
+      --min-gas-price=1000000000
+      --gas-floor-target=12500000
+      --engine-signer="$ACCOUNT"
+      --force-sealing
+      --fast-unlock
+      --metrics
+      --metrics-port=6060
+      --jsonrpc-port=8545
+      --jsonrpc-cors=all
+      --jsonrpc-interface=all
+      --jsonrpc-hosts=all
+      --jsonrpc-apis=web3,eth,net,parity
+      --logging=info
+    healthcheck:
+      test: ["CMD", "sh", "-c", "(curl -sf --connect-timeout 1 --max-time 2 --retry 2 --retry-delay 3 --retry-max-time 15 http://localhost:6060/metrics >/dev/null && curl -sf --connect-timeout 1 --max-time 2 --retry 2 --retry-delay 3 --retry-max-time 15 -X POST -H 'Content-Type: application/json' --data '{\"jsonrpc\":\"2.0\",\"method\":\"eth_chainId\",\"id\":1}' http://localhost:8545/ >/dev/null) || sh -c 'pkill -15 openethereum && (sleep 10; pkill -9 openethereum) ; return 1'"]
+      interval: 60s
+      timeout: 30s
+      start_period: 60s
+    volumes:
+      - ./data:/root/data
+      - ./password:/root/password
+      - ./key:/root/data/keys/poasokol/key
+    expose:
+      - "8545"
+    ports:
+      - "30303:30303"
+      - "30303:30303/udp"
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "10"
+  agent:
+    init: true
+    container_name: ethstats
+    image: xdaichain/ethstats-agent:latest
+    links:
+      - "openethereum"
+    depends_on:
+      - "openethereum"
+    environment:
+      NODE_ENV: production
+      RPC_HOST: openethereum
+      RPC_PORT: 8545
+      LISTENING_PORT: 30303
+      CONTACT_DETAILS: ${ETHSTATS_CONTACT}
+      INSTANCE_NAME: ${ETHSTATS_ID}
+      WS_SERVER: "https://sokol-netstat.poa.network/api"
+      WS_SECRET: "${ETHSTATS_SECRET}"
+      VERBOSITY: 1 # (0 = silent, 1 = error, warn, 2 = error, warn, info, success, 3 = all logs
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "10"
