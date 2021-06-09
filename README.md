@@ -50,4 +50,4 @@
 
 After docker containers are created, the node will sync with the chain (may take a while).
 
-To restart you need to use `docker-compose stop` and `docker-compose start` being in the `validator-node-dockerized` directory.
+To restart you need to use `docker-compose down` and `docker-compose up -d` being in the `validator-node-dockerized` directory.
