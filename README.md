@@ -1,11 +1,11 @@
-# How to launch POA Core/Sokol validator node with Docker Compose and OpenEthereum
+# How to launch POA Core/Sokol validator node with Docker Compose and Nethermind
 
 1. Install Docker Engine and Docker Compose following the original instructions https://docs.docker.com/get-docker/ and https://docs.docker.com/compose/install/
 
 2. Clone this repo:
 
     ```bash
-    $ git clone https://github.com/poanetwork/validator-node-dockerized
+    $ git clone -b nethermind https://github.com/poanetwork/validator-node-dockerized
     $ cd validator-node-dockerized
     ```
 
@@ -15,7 +15,17 @@
     - `- ./key:/root/data/keys/poasokol/key` to `- ./key:/root/data/keys/poacore/key`
     - `WS_SERVER: "https://sokol-netstat.poa.network/api"` to `WS_SERVER: "https://core-netstat.poa.network/api"`
 
-4. To be a validator, you need to have a mining address and a private key for it. Name your JSON keystore file as `key` and put it to the `validator-node-dockerized` directory. Put keystore's password to `password` file.
+4. To be a validator, you need to have your mining address private key. You will keep it in a `.env` file.
+
+    If you don't have the private key in a plain format (a hex string, 64 characters long), but have a JSON Keystore file of it (with a password), please go through     the following steps to get your plain private key string:
+
+    - Open your MetaMask.
+    - Go to `Import Account`.
+    - In the `Select Type` drop-down list choose `JSON File`.
+    - Point to your JSON Keystore file, enter the password for it, and click `Import` button.
+    - Switch to the newly imported account and go to `Account details`. Click `Export private key` button.
+    - On the appeared `Show Private Keys` section type your MetaMask password and click `Confirm`.
+    - You will see your 64 characters long private key.
 
 5. Copy `.env.example` to `.env` and configure the `.env` file. There are a few settings you need to define:
 
@@ -23,17 +33,17 @@
     ETHSTATS_ID=[validator_name]
     ETHSTATS_CONTACT=[contact_email]
     ETHSTATS_SECRET=[netstat_secret_key]
-    EXT_IP=[server_external_ip]
-    ACCOUNT=[0x_your_mining_address]
+    KEY=[your_private_key_for_mining_address]
+    SEQAPIKEY=[seq_api_key]
     ```
 
-    - `ETHSTATS_ID` - The displayed name of your validator in [Sokol Netstats](https://sokol-netstat.poa.network/) or [Core Netstats](https://core-netstat.poa.network/).
+    - `ETHSTATS_ID` - The displayed name of your validator in [Netstats](https://sokol-netstat.poa.network/).
     - `ETHSTATS_CONTACT` - Validator's contact (e.g., e-mail).
     - `ETHSTATS_SECRET` - Secret key to connect to Netstat (should be provided by POA team, please, request it).
-    - `EXT_IP` - External IP of the current server.
-    - `ACCOUNT` - Your mining address (with leading `0x`).
+    - `KEY` - Your mining address private key (should be 64 characters long without leading `0x`).
+    - `SEQAPIKEY` - An API key for [Seq](https://datalust.co/seq) log collector (should be provided by POA team, please, request it).
 
-6. Start your node and Netstat service.
+6. Start your node.
 
     ```bash
     $ docker-compose up -d
