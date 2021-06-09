@@ -11,9 +11,8 @@
 
 3. If you are POA Core validator, change the following lines in the `docker-compose.yml`:
 
-    - `--chain=poasokol` to `--chain=poacore`
-    - `- ./key:/root/data/keys/poasokol/key` to `- ./key:/root/data/keys/poacore/key`
-    - `WS_SERVER: "https://sokol-netstat.poa.network/api"` to `WS_SERVER: "https://core-netstat.poa.network/api"`
+    - `NETHERMIND_CONFIG: sokol` to `NETHERMIND_CONFIG: poacore`
+    - `NETHERMIND_ETHSTATSCONFIG_SERVER: "wss://sokol-netstat.poa.network/api"` to `NETHERMIND_ETHSTATSCONFIG_SERVER: "wss://core-netstat.poa.network/api"`
 
 4. To be a validator, you need to have your mining address private key. You will keep it in a `.env` file.
 
