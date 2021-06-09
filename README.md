@@ -26,7 +26,7 @@
     - On the appeared `Show Private Keys` section type your MetaMask password and click `Confirm`.
     - You will see your 64 characters long private key.
 
-5. Copy `.env.example` to `.env` and configure the `.env` file. There are a few settings you need to define:
+5. Copy `.env.example` to `.env` and configure the `.env` file. There are a few settings you need to define (values without square brackets):
 
     ```
     ETHSTATS_ID=[validator_name]
