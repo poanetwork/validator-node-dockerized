@@ -2,7 +2,7 @@ version: '3.7'
 services:
   nethermind:
     init: true
-    container_name: validator
+    container_name: poa-validator
     image: nethermind/nethermind:latest
     environment:
       NETHERMIND_CONFIG: sokol
